@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [ 11, 17 ]
+        java: [ 11 ]
     # Job name
     name: Build and test SecurityAnalytics
     # This job runs on Linux
@@ -66,7 +66,10 @@ jobs:
           fi
       - name: Build rally fork
         run: |
-          echo "..."
+          git clone https://github.com/phaseshiftg/rally.git
+          cd rally
+          docker build -f ./docker/Dockerfiles/Dockerfile-dev -t rally:os .
+          
 
       - name: Run Docker Image
         if: env.imagePresent == 'true'
@@ -78,7 +81,7 @@ jobs:
       - name: Run SecurityAnalytics Test for security enabled test cases
         if: env.imagePresent == 'true'
         run: |
-          docker run rally:opensearch race \
+          docker run rally:os /entrypoint.sh race \
             --track-path=/tracks/security_analytics \
             --test-mode --pipeline=benchmark-only \
             --target-hosts=172.17.0.1:9200 \
