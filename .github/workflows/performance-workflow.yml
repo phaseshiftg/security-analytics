@@ -81,10 +81,14 @@ jobs:
       - name: Run SecurityAnalytics Test for security enabled test cases
         if: env.imagePresent == 'true'
         run: |
-          docker run rally:os /entrypoint.sh race \
+          docker run -t -i --user=root \
+            rally:os bash -c "git clone https://github.com/phaseshiftg/security-analytics-performance-tests /tracks && \
+            ls -l /tracks && \
+            cd /tracks && \
+            /entrypoint.sh race \
             --track-path=/tracks/security_analytics \
             --test-mode --pipeline=benchmark-only \
             --target-hosts=172.17.0.1:9200 \
-            --client-options="use_ssl:true,verify_certs:false,basic_auth_user:'admin',basic_auth_password:'admin'"
+            --client-options=\"use_ssl:true,verify_certs:false,basic_auth_user:'admin',basic_auth_password:'admin'\""
           
           
